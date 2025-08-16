@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>द केयर फाउन्डेसन – पत्र (PWA)</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#111827" />
+  <style>
+    :root { --bg:#f7f7fb; --card:#fff; --border:#e5e7eb; --muted:#6b7280; --shadow:0 10px 25px rgba(0,0,0,.06);
+            --page-w:794px; --page-h:1123px; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:'Noto Sans Devanagari','Mangal','Kalimati','Nirmala UI','Hind',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#111}
+    .wrap{max-width:980px;margin:0 auto;padding:14px}
+    header{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+    .badge{background:#111827;color:#fff;padding:6px 10px;border-radius:999px;font-size:12px}
+    .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:12px}
+    label{display:block;color:var(--muted);font-size:14px;margin:8px 0 4px}
+    input{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:16px}
+    .row{display:grid;grid-template-columns:1fr 140px 40px;gap:8px;align-items:center;margin-bottom:8px}
+    .row .remove{height:44px;border:1px solid #fecaca;background:#fee2e2;border-radius:10px;color:#991b1b}
+    .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    button{background:#111827;color:#fff;border:none;border-radius:10px;padding:10px 14px;font-size:15px}
+    button.secondary{background:#f3f4f6;color:#111;border:1px solid var(--border)}
+    .page{width:var(--page-w);min-height:var(--page-h);margin:14px auto;background:#fff;border:1px solid var(--border);
+          border-radius:10px;box-shadow:var(--shadow);padding:48px 56px}
+    .brand{text-align:center;line-height:1.25;margin-bottom:10px}
+    .brand .title{font-weight:700;font-size:20px}
+    .brand .tag{color:#6b7280;font-size:13px;margin-top:4px}
+    .brand .label{font-weight:700;font-size:15px;margin-top:6px}
+    .meta{margin-top:12px;display:flex;justify-content:space-between;font-size:14px}
+    .salutation{margin-top:16px;font-size:16px}
+    .body p{font-size:16px;line-height:1.75;margin:14px 0}
+    .section-title{font-weight:700;margin-top:12px}
+    .list{list-style:none;padding-left:0;margin:10px 0 0}
+    .list li{margin:6px 0;font-size:16px}
+    .total{margin-top:8px;font-weight:700}
+    @media print {.card,header,.btns{display:none!important}.page{border:none;box-shadow:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h3 style="margin:0">पत्र जेनरेटर (PWA)</h3>
+      <span class="badge" id="status">Offline ready</span>
+    </header>
+
+    <div class="card">
+      <label for="priya">प्रिय (नाम)*</label>
+      <input id="priya" placeholder="जस्तै: श्री/श्रीमती ______">
+
+      <label for="host">आमन्त्रकको योगदान (CAD)</label>
+      <input id="host" type="number" inputmode="decimal" step="0.01" min="0" value="0">
+
+      <label>परिवार तथा अतिथि महानुभावहरूको योगदान (नाम र रकम)</label>
+      <div id="rows"></div>
+      <div class="btns">
+        <button id="addRow" type="button">+ अर्को पङ्क्ति थप्नुहोस्</button>
+        <button id="clearRows" class="secondary" type="button">सबै अतिथि खाली</button>
+      </div>
+
+      <div class="btns">
+        <button id="refresh" type="button">पत्र अपडेट</button>
+        <button id="downloadJpg" class="secondary" type="button">JPEG डाउनलोड</button>
+        <button id="printBtn" class="secondary" type="button">Print / Save as PDF</button>
+      </div>
+      <div style="font-size:12px;color:#6b7280;margin-top:6px">मिति स्वचालित; रकमहरू आफैँ जम्मा हुन्छन्।</div>
+    </div>
+
+    <div id="page" class="page">
+      <div class="brand">
+        <div class="title">द केयर फाउन्डेसन (एडमोन्टन साथी सहयोगी समूह)</div>
+        <div class="tag">Compassion • Integrity • Service</div>
+        <div class="label">📍 Letter of Appreciation & Donation Acknowledgment</div>
+      </div>
+      <div class="meta">
+        <div>मिति: <span id="date"></span></div><div></div>
+      </div>
+      <div class="salutation">प्रिय <span id="priyaOut" style="font-weight:600;">____________________________</span>,</div>
+      <div class="body">
+        <p>द केयर फाउन्डेसन (एडमोन्टन सहयोगी समूह) तर्फबाट, तपाईं र तपाईंको परिवारलाई हाम्रो भजन कार्यक्रमका लागि आफ्नै घरमा स्वागत गर्नुभएकोमा हार्दिक धन्यवाद दिन चाहन्छौँ। तपाईंको आत्मीय आतिथ्य र उदार योगदानले हाम्रो मिशनलाई मजबुत बनाएको छ—नेपालमा गरिब तथा विपन्न मानिसहरूलाई सहयोग गर्ने, विशेष गरी उपचार पाउन आर्थिक पहुँच नभएका बिरामीहरू, अनाथ बालबालिका र असहाय वृद्ध व्यक्तिहरूलाई सहयोग पुर्‍याउने हाम्रो अभियानलाई निरन्तरता दिन तपाईंको योगदान अमूल्य रहेको छ।</p>
+        <p>तपाईंको निवासस्थानमा सम्पन्न भजन कार्यक्रममार्फत निम्नलिखित सहयोग रकम प्राप्त भएको जानकारी गराइन्छः</p>
+        <p class="section-title">आमन्त्रकको योगदान: <span id="hostOut">0.00</span> CAD</p>
+        <div class="section-title">परिवार तथा अतिथि महानुभावहरूको योगदान:</div>
+        <ul id="guestList" class="list">
+          <li>• ____________________________</li>
+          <li>• ____________________________</li>
+          <li>• ____________________________</li>
+        </ul>
+        <div class="total">कुल संकलित रकम: <span id="totalOut">0.00</span> CAD</div>
+        <p>यो अमूल्य सहयोग हामीले प्राथमिकताका साथ उपचार खर्चका लागि प्रयोग गर्नेछौँ। साथै, यसबाट असहाय अनाथ बालबालिका र वृद्ध व्यक्तिहरूलाई पनि सहयोग पुग्नेछ।</p>
+        <p>हामी तपाईंको निरन्तर साथ र उदार समर्थनप्रति हार्दिक आभार व्यक्त गर्दछौँ, जसले हाम्रो सेवाभाव र मानवीय अभियानलाई अझ सशक्त र स्थायी बनाउन महत्वपूर्ण भूमिका खेलेको छ।</p>
+        <div style="margin-top:24px">हार्दिक कृतज्ञता सहित,</div>
+        <div style="font-weight:700;margin-top:10px">द केयर फाउन्डेसन</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+      });
+    }
+    const $ = (id)=>document.getElementById(id);
+    const priyaIn=$('priya'), hostIn=$('host'), rowsEl=$('rows');
+    const priyaOut=$('priyaOut'), hostOut=$('hostOut'), guestList=$('guestList'), totalOut=$('totalOut'), dateOut=$('date');
+    const refreshBtn=$('refresh'), addRowBtn=$('addRow'), clearRowsBtn=$('clearRows'), dlBtn=$('downloadJpg'), printBtn=$('printBtn');
+
+    function addRow(name='',amount=''){
+      const row=document.createElement('div'); row.className='row';
+      const nameInput=document.createElement('input'); nameInput.placeholder='नाम'; nameInput.value=name;
+      const amtInput=document.createElement('input'); amtInput.type='number'; amtInput.inputMode='decimal'; amtInput.step='0.01'; amtInput.min='0'; amtInput.placeholder='रकम (CAD)'; amtInput.value=amount;
+      const x=document.createElement('button'); x.type='button'; x.className='remove'; x.textContent='×';
+      [nameInput, amtInput].forEach(el => ['input','change','keyup','blur'].forEach(ev=>el.addEventListener(ev, render, {passive:true})));
+      x.addEventListener('click', ()=>{ rowsEl.removeChild(row); render(); });
+      row.appendChild(nameInput); row.appendChild(amtInput); row.appendChild(x);
+      rowsEl.appendChild(row);
+    }
+    function readGuests(){
+      return [...rowsEl.querySelectorAll('.row')].map(r=>{
+        const [n,a]=r.querySelectorAll('input');
+        const name=(n.value||'').trim();
+        const amt=parseFloat(a.value);
+        return {name, amount: Number.isFinite(amt)?amt:0};
+      }).filter(x=>x.name || x.amount>0);
+    }
+    function nepDate(d=new Date()){ try{return d.toLocaleDateString('ne-NP',{year:'numeric',month:'long',day:'numeric'})}catch(e){return d.toISOString().slice(0,10);}}
+    function render(){
+      dateOut.textContent = nepDate(new Date());
+      priyaOut.textContent = (priyaIn.value||'____________________________').trim() || '____________________________';
+      const hostAmt = parseFloat(hostIn.value); const hostNum = Number.isFinite(hostAmt)?hostAmt:0;
+      hostOut.textContent = hostNum.toFixed(2);
+      const guests = readGuests();
+      guestList.innerHTML='';
+      if(guests.length===0){
+        for(let i=0;i<3;i++){ const li=document.createElement('li'); li.textContent='• ____________________________'; guestList.appendChild(li); }
+      } else {
+        guests.forEach(g=>{ const li=document.createElement('li'); li.textContent=`• ${g.name} – ${g.amount.toFixed(2)} CAD`; guestList.appendChild(li); });
+      }
+      const total = guests.reduce((s,g)=>s+g.amount, hostNum);
+      totalOut.textContent = total.toFixed(2);
+    }
+    // default 3 rows
+    for(let i=0;i<3;i++) addRow();
+    [priyaIn, hostIn].forEach(el=>['input','change','keyup'].forEach(ev=>el.addEventListener(ev, render, {passive:true})));
+    addRowBtn.addEventListener('click', ()=>{ addRow(); render(); });
+    clearRowsBtn.addEventListener('click', ()=>{ rowsEl.innerHTML=''; for(let i=0;i<3;i++) addRow(); render(); });
+    refreshBtn.addEventListener('click', render);
+    printBtn.addEventListener('click', ()=>window.print());
+    render();
+
+    // JPEG export via SVG foreignObject (iOS-friendly: opens new tab with image)
+    function pageToJPEG(node, quality=0.95){
+      const rect = node.getBoundingClientRect();
+      const w = Math.ceil(rect.width), h = Math.ceil(rect.height);
+      const styles = `<style>*{box-sizing:border-box}body{margin:0}.page{width:${w}px;min-height:${h}px;margin:0;background:#fff;padding:48px 56px;color:#111;font-family:'Noto Sans Devanagari','Mangal','Kalimati','Nirmala UI','Hind',Arial,sans-serif}.brand{text-align:center;line-height:1.25;margin-bottom:10px}.brand .title{font-weight:700;font-size:20px}.brand .tag{color:#6b7280;font-size:13px;margin-top:4px}.brand .label{font-weight:700;font-size:15px;margin-top:6px}.meta{margin-top:12px;display:flex;justify-content:space-between;font-size:14px}.salutation{margin-top:16px;font-size:16px}.body p{font-size:16px;line-height:1.75;margin:14px 0}.section-title{font-weight:700;margin-top:12px}.list{list-style:none;padding-left:0;margin:10px 0 0}.list li{margin:6px 0;font-size:16px}.total{margin-top:8px;font-weight:700}</style>`;
+      const clone = node.cloneNode(true);
+      const wrapper = document.createElement('div'); wrapper.setAttribute('xmlns','http://www.w3.org/1999/xhtml'); wrapper.appendChild(clone);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><foreignObject x="0" y="0" width="${w}" height="${h}">${styles}${wrapper.outerHTML}</foreignObject></svg>`;
+      const img = new Image(); const blob = new Blob([svg], {type:'image/svg+xml;charset=utf-8'}); const url = URL.createObjectURL(blob);
+      return new Promise((resolve,reject)=>{
+        img.onload = () => {
+          try{
+            const canvas = document.createElement('canvas'); canvas.width=w*2; canvas.height=h*2;
+            const ctx = canvas.getContext('2d'); ctx.scale(2,2); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
+            URL.revokeObjectURL(url);
+            const dataURL = canvas.toDataURL('image/jpeg', quality);
+            const win = window.open(); if(win){ win.document.write('<img src=\"'+dataURL+'\" style=\"width:100%\">'); }
+            resolve(true);
+          }catch(err){ reject(err); }
+        };
+        img.onerror = e => { URL.revokeObjectURL(url); reject(e); };
+        img.src = url;
+      });
+    }
+    $('downloadJpg').addEventListener('click', async ()=>{ render(); await pageToJPEG(document.getElementById('page')); }, {passive:true});
+  </script>
+</body>
+</html>
